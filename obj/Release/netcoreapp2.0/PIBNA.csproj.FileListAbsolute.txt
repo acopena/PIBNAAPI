@@ -1,0 +1,9 @@
+C:\Project\PIBNAAPI\bin\Release\netcoreapp2.0\PIBNA.deps.json
+C:\Project\PIBNAAPI\bin\Release\netcoreapp2.0\PIBNA.dll
+C:\Project\PIBNAAPI\bin\Release\netcoreapp2.0\PIBNA.pdb
+C:\Project\PIBNAAPI\obj\Release\netcoreapp2.0\PIBNA.csprojResolveAssemblyReference.cache
+C:\Project\PIBNAAPI\obj\Release\netcoreapp2.0\PIBNA.csproj.CoreCompileInputs.cache
+C:\Project\PIBNAAPI\obj\Release\netcoreapp2.0\PIBNA.AssemblyInfoInputs.cache
+C:\Project\PIBNAAPI\obj\Release\netcoreapp2.0\PIBNA.AssemblyInfo.cs
+C:\Project\PIBNAAPI\obj\Release\netcoreapp2.0\PIBNA.dll
+C:\Project\PIBNAAPI\obj\Release\netcoreapp2.0\PIBNA.pdb
