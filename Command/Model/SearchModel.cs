@@ -6,12 +6,12 @@ namespace PIBNAAPI.Command.Model
 {
     public class SearchPageModel
     {
-        public List<SearchModel> data { get; set; }
+        public List<SearchPibnaModel> data { get; set; }
         public int RecordCount { get; set; }
 
     }
 
-    public class SearchModel
+    public class SearchPibnaModel
     {
         public int Id { get; set; }
         public string Name { get; set; }

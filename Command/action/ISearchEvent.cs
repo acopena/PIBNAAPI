@@ -8,6 +8,6 @@ namespace PIBNAAPI.Command.action
 {
     public interface ISearchEvent
     {
-        Task<List<SearchModel>> GetSearch(string search);
+        Task<List<SearchPibnaModel>> GetSearch(string search);
     }
 }

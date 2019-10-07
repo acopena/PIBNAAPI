@@ -11,9 +11,9 @@ namespace PIBNAAPI.Command.action
 {
     public class SearchEvent : ISearchEvent
     {
-        public async Task<List<SearchModel>> GetSearch(string search)
+        public async Task<List<SearchPibnaModel>> GetSearch(string search)
         {
-            List<SearchModel> model = new List<SearchModel>();
+            List<SearchPibnaModel> model = new List<SearchPibnaModel>();
             using (var ctx = new PIBNAContext())
             {
                 var data = await (from p in ctx.PMember
@@ -21,7 +21,7 @@ namespace PIBNAAPI.Command.action
                                   select p).ToListAsync();
                 foreach (var r in data)
                 {
-                    SearchModel m = new SearchModel();
+                    SearchPibnaModel m = new SearchPibnaModel();
                     m.Id = r.MemberId;
                     m.Name = r.FirstName + ' ' + r.MiddleName + ' ' + r.LastName;
                     m.Type = "Player";
@@ -44,7 +44,7 @@ namespace PIBNAAPI.Command.action
                                        select p).ToListAsync();
                 foreach (var r in officials)
                 {
-                    SearchModel m = new SearchModel();
+                    SearchPibnaModel m = new SearchPibnaModel();
                     m.Id = r.ClubId;
                     m.Name = r.Name;
                     m.Type = "Club Official";
@@ -61,7 +61,7 @@ namespace PIBNAAPI.Command.action
                                    select p).ToListAsync();
                 foreach (var r in Coach)
                 {
-                    SearchModel m = new SearchModel();
+                    SearchPibnaModel m = new SearchPibnaModel();
                     m.Id = r.TeamId;
                     m.Name = r.Name;
                     m.Type = "Coach";
@@ -84,7 +84,7 @@ namespace PIBNAAPI.Command.action
                                   select p).ToListAsync();
                 foreach (var r in club)
                 {
-                    SearchModel m = new SearchModel();
+                    SearchPibnaModel m = new SearchPibnaModel();
                     m.Id = r.ClubId;
                     m.Name = r.ClubName;
                     m.Type = "Club";
@@ -99,7 +99,7 @@ namespace PIBNAAPI.Command.action
                                   select p).ToListAsync();
                 foreach (var r in user)
                 {
-                    SearchModel m = new SearchModel();
+                    SearchPibnaModel m = new SearchPibnaModel();
                     m.Id = r.UserId;
                     m.Name = r.FirstName + ' ' + r.LastName;
                     m.Type = "User";
