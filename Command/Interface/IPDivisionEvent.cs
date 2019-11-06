@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace PIBNAAPI.Command.action
 {
-    public interface IDivisionEvent
+    public interface IPDivisionEvent
     {
         Task<List<PDivision>> GetList();
         Task<PDivision> GetById(int id);
-        void PostDivision(DivisionModel model);
+        Task PostDivision(DivisionModel model);
 
     }
 }

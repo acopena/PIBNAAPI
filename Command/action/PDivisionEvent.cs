@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace PIBNAAPI.Command.action
 {
-    public class DivisionEvent: IDivisionEvent
+    public class PDivisionEvent: IPDivisionEvent
     {
         public async Task<List<PDivision>> GetList()
         {
@@ -40,7 +40,7 @@ namespace PIBNAAPI.Command.action
 
         }
 
-        public void PostDivision(DivisionModel model)
+        public async Task PostDivision(DivisionModel model)
         {
             DivisionModel data = model;
             try
@@ -48,9 +48,9 @@ namespace PIBNAAPI.Command.action
 
                 using (var ctx = new PIBNAContext())
                 {
-                    var dta = (from p in ctx.PDivision
+                    var dta = await (from p in ctx.PDivision
                                where p.EndDate == null && p.DivisionId == data.DivisionId
-                               select p).FirstOrDefault();
+                               select p).FirstOrDefaultAsync();
 
                     if (dta == null)
                     {
@@ -75,7 +75,7 @@ namespace PIBNAAPI.Command.action
                         dta.MaxHeightRequired = data.MaxHeightRequired;
                         dta.AgeGroup = data.AgeGroup;
                     }
-                    ctx.SaveChanges();
+                    await ctx.SaveChangesAsync();
                 }
             }
             catch (Exception ex)

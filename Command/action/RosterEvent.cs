@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace PIBNAAPI.Command.action
 {
-    public class MemberEvent : IMemberEvent
+    public class RosterEvent : IRosterEvent
     {
         public async Task<MemberSearchReturn> GetMemberInfo(string firstname, string lastname, string middlename, DateTime bod, int clubId)
         {

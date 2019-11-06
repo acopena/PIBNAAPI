@@ -12,8 +12,8 @@ namespace PIBNAAPI.Command.action
         Task<List<ClubModel>> GetList();
         Task<ClubPageModel> GetListByPage(int pageSize, int page);
         Task<ClubModel> GetById(int id);
-        void PostClub(ClubModel data);
-        void PostOfficialEnd(string id);
-        void DeleteOfficial(int id);
+        Task PostClub(ClubModel data);
+        Task PostOfficialEnd(string id);
+        Task DeleteOfficial(int id);
     }
 }

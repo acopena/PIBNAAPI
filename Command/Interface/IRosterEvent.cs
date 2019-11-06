@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PIBNAAPI.Command.action
 {
-    public interface IMemberEvent
+    public interface IRosterEvent
     {
         Task<MemberSearchReturn> GetMemberInfo(string firstname, string lastname, string middlename, DateTime bod, int clubId);
         Task<MemberInfoModel> GetMemberById(int Id);

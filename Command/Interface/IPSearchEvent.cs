@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PIBNAAPI.Command.action
 {
-    public interface ISearchEvent
+    public interface IPSearchEvent
     {
         Task<List<SearchPibnaModel>> GetSearch(string search);
     }

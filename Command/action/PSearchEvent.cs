@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PIBNAAPI.Command.action
 {
-    public class SearchEvent : ISearchEvent
+    public class PSearchEvent : IPSearchEvent
     {
         public async Task<List<SearchPibnaModel>> GetSearch(string search)
         {

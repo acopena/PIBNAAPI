@@ -223,14 +223,14 @@ namespace PIBNAAPI.Command.action
 
         }
 
-        public void PostClub(ClubModel data)
+        public async Task PostClub(ClubModel data)
         {
 
             using (var ctx = new PIBNAContext())
             {
-                var dta = (from p in ctx.PClub
+                var dta = await (from p in ctx.PClub
                            where p.EndDate == null && p.ClubId == data.ClubId
-                           select p).FirstOrDefault();
+                           select p).FirstOrDefaultAsync();
 
                 if (dta == null)
                 {
@@ -256,7 +256,7 @@ namespace PIBNAAPI.Command.action
                     ctx.SaveChanges();
                 }
 
-                var existingOfficer = ctx.PClubOfficial.Where(s => s.ClubId == data.ClubId).Select(p => p).ToList();
+                var existingOfficer = await ctx.PClubOfficial.Where(s => s.ClubId == data.ClubId).Select(p => p).ToListAsync();
 
                 int countOfficialList = existingOfficer.Count();
                 int countNewOfficialList = data.OfficialList.Where(s => s.ClubOfficialId > 0).Count();
@@ -290,42 +290,43 @@ namespace PIBNAAPI.Command.action
                     c.ClubId = data.ClubId;
                     ctx.PClubOfficial.Add(c);
                 }
-                ctx.SaveChanges();
+                await ctx.SaveChangesAsync();
 
             }
 
 
         }
 
-        public void PostOfficialEnd(string id)
+        public async Task PostOfficialEnd(string id)
         {
             ClubModel data = new ClubModel();
             using (var ctx = new PIBNAContext())
             {
-                var dta = (from p in ctx.PClubOfficial
+                var dta = await (from p in ctx.PClubOfficial
                            where p.ClubOfficialId == int.Parse(id)
-                           select p).FirstOrDefault();
+                           select p).FirstOrDefaultAsync();
 
                 if (data != null)
                 {
                     dta.EndDate = DateTime.Now;
                 }
-                ctx.SaveChanges();
+               await ctx.SaveChangesAsync();
             }
         }
         
-        public void DeleteOfficial(int id)
+        public async Task DeleteOfficial(int id)
         {
             ClubModel data = new ClubModel();
             using (var ctx = new PIBNAContext())
             {
-                var dta = (from p in ctx.PClubOfficial
-                           where p.ClubOfficialId == id
-                           select p).FirstOrDefault();
+                var dta = await (from p in ctx.PClubOfficial
+                                 where p.ClubOfficialId == id
+                                 select p).FirstOrDefaultAsync();
 
                 if (data != null)
                 {
                     dta.EndDate = DateTime.Now;
+                    await ctx.SaveChangesAsync();
                 }
             }
         }

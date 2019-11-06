@@ -10,9 +10,8 @@ C:\Project\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.csprojResolveAssemblyRefe
 C:\repo\PIBNAAPI\bin\Release\netcoreapp2.2\PIBNAAPI.deps.json
 C:\repo\PIBNAAPI\bin\Release\netcoreapp2.2\PIBNAAPI.dll
 C:\repo\PIBNAAPI\bin\Release\netcoreapp2.2\PIBNAAPI.pdb
-C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.csprojResolveAssemblyReference.cache
-C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.csproj.CoreCompileInputs.cache
 C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.AssemblyInfoInputs.cache
 C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.AssemblyInfo.cs
 C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.dll
 C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.pdb
+C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.csprojAssemblyReference.cache

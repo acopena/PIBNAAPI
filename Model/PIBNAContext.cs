@@ -45,8 +45,8 @@ namespace PIBNAAPI.Model
         {
             if (!optionsBuilder.IsConfigured)
             {
-                string cn = @"Data Source=tcp:sql2k1602.discountasp.net;Initial Catalog=SQL2016_921245_opena;User ID=SQL2016_921245_opena_user;Password=@co1367551;";
-                optionsBuilder.UseSqlServer(cn);
+                //string cn = @"Data Source=tcp:sql2k1602.discountasp.net;Initial Catalog=SQL2016_921245_opena;User ID=SQL2016_921245_opena_user;Password=@co1367551;";
+                //optionsBuilder.UseSqlServer(cn);
             }
         }
 
