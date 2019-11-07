@@ -9,68 +9,66 @@ using PIBNAAPI.Command.Model;
 
 namespace PIBNAAPI.Command.Query
 {
-    public static class TeamView
+    public static class TeamView_old
     {
-        public static async Task<List<TeamModel>> GetTeamListByClub(int clubid, int seasonId, IMapper _mapper)
+        public static async Task<List<TeamModel>> GetTeamListByClub(int clubid, int seasonId, IMapper _mapper, PIBNAContext context)
         {
             List<TeamModel> teamList = new List<TeamModel>();
-            using (var ctx = new PIBNAContext())
+
+            var team = await context.PTeam
+                .Include(s => s.TeamStatus)
+                .Include(s => s.Club)
+                .Include(s => s.Division)
+                .Include(s => s.User)
+                .Where(s => s.ClubId == clubid && s.EndDate == null && s.SeasonId == seasonId)
+                .Select(s => s).ToListAsync();
+
+            foreach (var r in team)
             {
-                var team = await ctx.PTeam
-                    .Include(s => s.TeamStatus)
-                    .Include(s => s.Club)
-                    .Include(s => s.Division)
-                    .Include(s => s.User)
-                    .Where(s => s.ClubId == clubid && s.EndDate == null && s.SeasonId == seasonId)
-                    .Select(s => s).ToListAsync();
-
-                foreach (var r in team)
-                {
-                    TeamModel model = await GetTeamData(r, _mapper, ctx);
-                    teamList.Add(model);
-                }
-
+                TeamModel model = await GetTeamData(r, _mapper, context);
+                teamList.Add(model);
             }
+
+
             return teamList;
         }
-        
-        public static async Task<PaginatedList<TeamsModel>> GetTeamList(int clubid, int seasonId,int page, int pageSize)
+
+        public static async Task<PaginatedList<TeamsModel>> GetTeamList(int clubid, int seasonId, int page, int pageSize, PIBNAContext context)
         {
-            using (var ctx = new PIBNAContext())
-            {
-                var teams = ctx.PTeam
-                     .Include(s => s.TeamStatus)
-                     .Include(s => s.Club)
-                     .Include(s => s.Division)
-                     .Include(s => s.PTeamRoster)
-                     .Include(s => s.PTeamOfficial)
-                     .Include(s => s.User)
-                     .Where(s => s.ClubId == clubid && s.EndDate == null && s.SeasonId == seasonId && s.EndDate == null)
-                     .Select(s => new TeamsModel()
-                     {
-                         TeamId = s.TeamId,
-                         TeamName = s.TeamName,
-                         DivisionId = s.DivisionId,
-                         DivisionName = s.Division.DivisionName,
-                         SeasonId = s.SeasonId,
-                         UserId = s.UserId,
-                         UserName = s.User.UserName,
-                         ClubId = s.ClubId,
-                         ClubName = s.Club.ClubName,
-                         TeamStatusId = s.TeamStatusId,
-                         TeamStatusDescription = s.TeamStatus.TeamStatusDescription,
-                         ApprovedBy = s.ApprovedBy,
-                         ApprovedDate = s.ApprovedDate,
-                         SubmitForApprovalDate = s.SubmitForApprovalDate,
-                         RosterCount = s.PTeamRoster.Where(x => x.EndDate == null).Count(),
-                         CoachName = s.PTeamOfficial.Where(x => x.EndDate == null).FirstOrDefault().Name
 
-                     });
+            var teams = context.PTeam
+                 .Include(s => s.TeamStatus)
+                 .Include(s => s.Club)
+                 .Include(s => s.Division)
+                 .Include(s => s.PTeamRoster)
+                 .Include(s => s.PTeamOfficial)
+                 .Include(s => s.User)
+                 .Where(s => s.ClubId == clubid && s.EndDate == null && s.SeasonId == seasonId && s.EndDate == null)
+                 .Select(s => new TeamsModel()
+                 {
+                     TeamId = s.TeamId,
+                     TeamName = s.TeamName,
+                     DivisionId = s.DivisionId,
+                     DivisionName = s.Division.DivisionName,
+                     SeasonId = s.SeasonId,
+                     UserId = s.UserId,
+                     UserName = s.User.UserName,
+                     ClubId = s.ClubId,
+                     ClubName = s.Club.ClubName,
+                     TeamStatusId = s.TeamStatusId,
+                     TeamStatusDescription = s.TeamStatus.TeamStatusDescription,
+                     ApprovedBy = s.ApprovedBy,
+                     ApprovedDate = s.ApprovedDate,
+                     SubmitForApprovalDate = s.SubmitForApprovalDate,
+                     RosterCount = s.PTeamRoster.Where(x => x.EndDate == null).Count(),
+                     CoachName = s.PTeamOfficial.Where(x => x.EndDate == null).FirstOrDefault().Name
 
-               return await PaginatedList<TeamsModel>.CreateAsync(teams.AsNoTracking(), page, pageSize);
+                 });
 
-            }
-            
+            return await PaginatedList<TeamsModel>.CreateAsync(teams.AsNoTracking(), page, pageSize);
+
+
+
         }
 
         public static System.Linq.IQueryable<T> Sort<T>(this System.Linq.IQueryable<T> source, string sortBy)
@@ -86,72 +84,60 @@ namespace PIBNAAPI.Command.Query
             return source;
         }
 
-        public static async Task<TeamModel> GetTeamByTeamId(int TeamId, IMapper _mapper)
+        public static async Task<TeamModel> GetTeamByTeamId(int TeamId, IMapper _mapper, PIBNAContext context)
         {
             TeamModel model = new TeamModel();
-            using (var ctx = new PIBNAContext())
-            {
-                var team = await ctx.PTeam
-                    .Include(s => s.TeamStatus)
-                    .Include(s => s.Club)
-                    .Include(s => s.Division)
-                    .Include(s => s.User)
-                    .Where(s => s.TeamId == TeamId && s.EndDate == null)
-                    .Select(s => s).FirstOrDefaultAsync();
 
-                model = await GetTeamData(team, _mapper, ctx);
+            var team = await context.PTeam
+                .Include(s => s.TeamStatus)
+                .Include(s => s.Club)
+                .Include(s => s.Division)
+                .Include(s => s.User)
+                .Where(s => s.TeamId == TeamId && s.EndDate == null)
+                .Select(s => s).FirstOrDefaultAsync();
 
-            }
+            model = await GetTeamData(team, _mapper, context);
+
+
             return model;
         }
 
-        public static async Task<List<TeamModel>> GetTeamByStatus(IMapper _mapper, int seasonId, int clubId, int divisionId, int teamStatusId)
+        public static async Task<List<TeamModel>> GetTeamByStatus(IMapper _mapper, int seasonId, int clubId, int divisionId, int teamStatusId, PIBNAContext context)
         {
 
             List<TeamModel> teamList = new List<TeamModel>();
-            using (var ctx = new PIBNAContext())
+
+            var team = await context.PTeam
+                 .Include(s => s.TeamStatus)
+                  .Include(s => s.Club)
+                 .Include(s => s.Division)
+                  .Include(s => s.User)
+                  .Where(s => s.EndDate == null && s.SeasonId == seasonId)
+                 .Select(s => s).ToListAsync();
+
+            if (clubId > 0)
+                team = team.Where(s => s.ClubId == clubId).ToList();
+            if (divisionId > 0)
+                team = team.Where(s => s.DivisionId == divisionId).ToList();
+            if (teamStatusId > 0)
+                team = team.Where(s => s.TeamStatusId == teamStatusId).ToList();
+            foreach (var r in team)
             {
-                var team = await ctx.PTeam
-                    .Include(s => s.TeamStatus)
-                     .Include(s => s.Club)
-                    .Include(s => s.Division)
-                     .Include(s => s.User)
-                     .Where(s => s.EndDate == null && s.SeasonId == seasonId)
-                    .Select(s => s).ToListAsync();
-
-                if (clubId > 0)
-                {
-                    team = team.Where(s => s.ClubId == clubId).ToList();
-                }
-                if (divisionId > 0)
-                {
-                    team = team.Where(s => s.DivisionId == divisionId).ToList();
-                }
-                if (teamStatusId > 0)
-                {
-                    team = team.Where(s => s.TeamStatusId == teamStatusId).ToList();
-                }
-
-
-                foreach (var r in team)
-                {
-                    TeamModel model = await GetTeamData(r, _mapper, ctx);
-                    teamList.Add(model);
-                }
-
-
+                TeamModel model = await GetTeamData(r, _mapper, context);
+                teamList.Add(model);
             }
+
+
             return teamList;
         }
 
 
-        public static async Task<List<TeamModel>> GetTeamByDivision(IMapper _mapper, int seasonId, int divisionId, int teamStatusId)
+        public static async Task<List<TeamModel>> GetTeamByDivision(IMapper _mapper, int seasonId, int divisionId, int teamStatusId, PIBNAContext context)
         {
 
             List<TeamModel> teamList = new List<TeamModel>();
-            using (var ctx = new PIBNAContext())
-            {
-                var team = await ctx.PTeam
+           
+                var team = await context.PTeam
                     .Include(s => s.TeamStatus)
                      .Include(s => s.Club)
                     .Include(s => s.Division)
@@ -167,12 +153,12 @@ namespace PIBNAAPI.Command.Query
 
                 foreach (var r in team)
                 {
-                    TeamModel model = await GetTeamData(r, _mapper, ctx);
+                    TeamModel model = await GetTeamData(r, _mapper, context);
                     teamList.Add(model);
                 }
 
 
-            }
+            
             return teamList;
         }
 
@@ -191,8 +177,8 @@ namespace PIBNAAPI.Command.Query
                     FirstName = s.Member.FirstName,
                     MiddleName = s.Member.MiddleName,
                     DateOfBirth = s.Member.DateOfBirth,
-                    IsApproved = _context.PMemberApproval.Where(c=>c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().IsApproved,
-                    ApprovedDate = _context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().ApprovedDate 
+                    IsApproved = _context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().IsApproved,
+                    ApprovedDate = _context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().ApprovedDate
 
                 }).ToListAsync();
 

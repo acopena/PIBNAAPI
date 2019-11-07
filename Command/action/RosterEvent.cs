@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using AutoMapper;
+using PIBNAAPI.Command.Interface;
 
 namespace PIBNAAPI.Command.action
 {
     public class RosterEvent : IRosterEvent
     {
-        public async Task<MemberSearchReturn> GetMemberInfo(string firstname, string lastname, string middlename, DateTime bod, int clubId)
+        public async Task<MemberSearchReturn> GetMemberInfo(string firstname, string lastname, string middlename, DateTime bod, int clubId, IMapper _mapper, PIBNAContext _context)
         {
             if (middlename == null)
             {
@@ -57,7 +59,7 @@ namespace PIBNAAPI.Command.action
             return model;
         }
 
-        public async Task<MemberInfoModel> GetMemberById(int Id)
+        public async Task<MemberInfoModel> GetMemberById(int Id, IMapper _mapper, PIBNAContext _context)
         {
             MemberInfoModel model = new MemberInfoModel();
 

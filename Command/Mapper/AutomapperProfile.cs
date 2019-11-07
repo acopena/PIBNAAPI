@@ -9,6 +9,8 @@ namespace PIBNAAPI.Command.PIBNAAPI.Mapper
     {
         public AutomapperProfile()
         {
+            CreateMap<PDivision, DivisionModel>();
+
             CreateMap<PTeam, TeamModel>()
                 .ForMember(dest => dest.TeamStatusDescription, opt => opt.MapFrom(src => src.TeamStatus.TeamStatusDescription))
                 .ForMember(dest => dest.ClubName, opt => opt.MapFrom(src => src.Club.ClubName))

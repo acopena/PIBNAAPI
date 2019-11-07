@@ -6,12 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using PIBNAAPI.Command.Interface;
 
 namespace PIBNAAPI.Command.action
 {
     public class PSearchEvent : IPSearchEvent
     {
-        public async Task<List<SearchPibnaModel>> GetSearch(string search)
+        public async Task<List<SearchPibnaModel>> GetSearch(string search, IMapper _mapper, PIBNAContext _context)
         {
             List<SearchPibnaModel> model = new List<SearchPibnaModel>();
             using (var ctx = new PIBNAContext())

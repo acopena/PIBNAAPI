@@ -66,6 +66,7 @@ namespace PIBNAAPI.Command.Model
 
     public class TeamRosterModel
     {
+        public int TeamId{ get; set; }
         public int TeamRosterId { get; set; }
         public int MemberId { get; set; }
         public string FirstName { get; set; }
@@ -80,6 +81,7 @@ namespace PIBNAAPI.Command.Model
 
     public class TeamOfficialModel
     {
+        public int TeamId{ get; set; }
         public int TeamOfficialId{ get; set; }
         
         public string Name{ get; set; }

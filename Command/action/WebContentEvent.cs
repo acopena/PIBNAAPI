@@ -8,16 +8,17 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using PIBNAAPI.Command.Interface;
 
 namespace PIBNAAPI.Command.action
 {
     public class WebContentEvent : IWebContentEvent
     {
-        public async Task<WebContentPageModel> GetList(int page, int pageSize)
+        public async Task<WebContentPageModel> GetList(int page, int pageSize, IMapper _mapper, PIBNAContext _context)
         {
             //List<WebContentModel> model = await GetWebContent.GetWebContentList(page, pageSize);
             var model = new WebContentPageModel();
-            var content = await GetWebContent.GetWebContentList(page, pageSize);
+            var content = await GetWebContent.GetWebContentList(page, pageSize, _context);
 
             model.RecordCount = content.TotalRecord;
             model.data = content;
@@ -26,22 +27,22 @@ namespace PIBNAAPI.Command.action
         }
 
       
-        public async Task<List<WebContentModel>> GetWebContentListByPage(int id)
+        public async Task<List<WebContentModel>> GetWebContentListByPage(int id, IMapper _mapper, PIBNAContext _context)
         {
-            List<WebContentModel> model = await GetWebContent.GetWebContentListByPage(id);
+            List<WebContentModel> model = await GetWebContent.GetWebContentListByPage(id, _context);
             return model;
         }
-        public async Task<List<PWebContentType>> GetWebContentTypeList()
+        public async Task<List<PWebContentType>> GetWebContentTypeList(IMapper _mapper, PIBNAContext _context)
         {
-            List<PWebContentType> model = await GetWebContent.GetWebContentTypeList();
+            List<PWebContentType> model = await GetWebContent.GetWebContentTypeList(_context);
             return model;
         }
-        public async Task<WebContentModel> GetContentById(int Id)
+        public async Task<WebContentModel> GetContentById(int Id, IMapper _mapper, PIBNAContext _context)
         {
-            WebContentModel model = await GetWebContent.GetWebContentById(Id);
+            WebContentModel model = await GetWebContent.GetWebContentById(Id,_context);
             return model;
         }
-        public async Task PostWebContent(WebContentParamModel value, IMapper _mapper)
+        public async Task PostWebContent(WebContentParamModel value, IMapper _mapper, PIBNAContext _context)
         {
             using (var ctx = new PIBNAContext())
             {
