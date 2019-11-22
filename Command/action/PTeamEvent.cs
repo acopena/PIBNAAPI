@@ -6,7 +6,6 @@ using PIBNAAPI.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PIBNAAPI.Command.action
@@ -16,7 +15,6 @@ namespace PIBNAAPI.Command.action
         public async Task<List<TeamModel>> GetTeamListByClub(int clubid, int seasonId, IMapper _mapper, PIBNAContext context)
         {
             List<TeamModel> teamList = new List<TeamModel>();
-
             var team = await context.PTeam
                 .Include(s => s.TeamStatus)
                 .Include(s => s.Club)
@@ -24,15 +22,11 @@ namespace PIBNAAPI.Command.action
                 .Include(s => s.User)
                 .Where(s => s.ClubId == clubid && s.EndDate == null && s.SeasonId == seasonId)
                 .Select(s => s).ToListAsync();
-
-            teamList = await GetTeamData(team, _mapper, context);
-
-            return teamList;
+            return await GetTeamData(team, _mapper, context);
         }
 
         public async Task<PaginatedList<TeamsModel>> GetTeamList(int clubid, int seasonId, int page, int pageSize, PIBNAContext context)
         {
-
             var teams = context.PTeam
                  .Include(s => s.TeamStatus)
                  .Include(s => s.Club)
@@ -59,13 +53,8 @@ namespace PIBNAAPI.Command.action
                      SubmitForApprovalDate = s.SubmitForApprovalDate,
                      RosterCount = s.PTeamRoster.Where(x => x.EndDate == null).Count(),
                      CoachName = s.PTeamOfficial.Where(x => x.EndDate == null).FirstOrDefault().Name
-
                  });
-
             return await PaginatedList<TeamsModel>.CreateAsync(teams.AsNoTracking(), page, pageSize);
-
-
-
         }
 
 
@@ -73,7 +62,6 @@ namespace PIBNAAPI.Command.action
         public async Task<TeamModel> GetTeamByTeamId(int TeamId, IMapper _mapper, PIBNAContext context)
         {
             TeamModel model = new TeamModel();
-
             var team = await context.PTeam
                 .Include(s => s.TeamStatus)
                 .Include(s => s.Club)
@@ -84,17 +72,12 @@ namespace PIBNAAPI.Command.action
 
             List<PTeam> teamList = new List<PTeam>();
             teamList.Add(team);
-
-
-            var data =  await GetTeamData(teamList, _mapper, context);
-
-            model = data[0];
-            return model;
+            var data = await GetTeamData(teamList, _mapper, context);
+            return data[0];
         }
 
         public async Task<List<TeamModel>> GetTeamByStatus(IMapper _mapper, int seasonId, int clubId, int divisionId, int teamStatusId, PIBNAContext context)
         {
-
             List<TeamModel> teamList = new List<TeamModel>();
             var team = context.PTeam
                  .Include(s => s.TeamStatus)
@@ -111,15 +94,13 @@ namespace PIBNAAPI.Command.action
             if (teamStatusId > 0)
                 team = team.Where(s => s.TeamStatusId == teamStatusId);
             var teams = await team.ToListAsync();
-            return  await GetTeamData(teams, _mapper, context);
+            return await GetTeamData(teams, _mapper, context);
         }
 
 
         public async Task<List<TeamModel>> GetTeamByDivision(IMapper _mapper, int seasonId, int divisionId, int teamStatusId, PIBNAContext context)
         {
-
             List<TeamModel> teamList = new List<TeamModel>();
-
             var team = await context.PTeam
                 .Include(s => s.TeamStatus)
                  .Include(s => s.Club)
@@ -129,9 +110,7 @@ namespace PIBNAAPI.Command.action
                 .Select(s => s).ToListAsync();
 
             if (teamStatusId > 0)
-            {
                 team = team.Where(s => s.TeamStatusId == teamStatusId).ToList();
-            }
 
             return await GetTeamData(team, _mapper, context);
         }
@@ -140,9 +119,7 @@ namespace PIBNAAPI.Command.action
         {
 
             List<TeamModel> teamList = new List<TeamModel>();
-
             var teamIdList = data.Select(s => s.TeamId).ToArray();
-
             var rosters = await context.PTeamRoster
                .Where(s => teamIdList.Contains(s.TeamId) && s.EndDate == null)
                .Select(s => new TeamRosterModel
@@ -156,7 +133,6 @@ namespace PIBNAAPI.Command.action
                    DateOfBirth = s.Member.DateOfBirth,
                    IsApproved = context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().IsApproved,
                    ApprovedDate = context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().ApprovedDate
-
                }).ToListAsync();
 
             var officials = await context.PTeamOfficial
@@ -195,19 +171,14 @@ namespace PIBNAAPI.Command.action
            int clubid, int divisionid, int teamid, int pageSize, int page, PIBNAContext context)
         {
             OpenRosterInfoPageModel model = new OpenRosterInfoPageModel();
-
-
-            var GetAllTeamInDivision = await (from p in context.PTeam
-                                              where
+            var GetAllTeamInDivision = await (from p in context.PTeam where
                           p.EndDate == null &&
                           p.ClubId == clubid &&
                           p.DivisionId == divisionid &&
                           p.SeasonId == DateTime.Now.Year
-                                              select p).ToListAsync();
+                          select p).ToListAsync();
 
             var teamInDivisionList = GetAllTeamInDivision.Select(s => s.TeamId).ToArray();
-
-
             var PlayerInTeam = await (from p in context.PTeamRoster
                                       join team in context.PTeam on p.TeamId equals team.TeamId
                                       where p.EndDate == null &&
@@ -239,22 +210,15 @@ namespace PIBNAAPI.Command.action
                               });
 
             if (!String.IsNullOrEmpty(searchKey))
-            {
                 memberList = memberList.Where(s => s.FirstName.Contains(searchKey) || s.LastName.Contains(searchKey));
-            }
-
-
+            
             var paginatedList = await PaginatedList<AvailableRosterModel>.CreateAsync(memberList.AsNoTracking(), page, pageSize);
-
-            var userTypeList = context.PUserType.Select(s => s).ToList();
+            var userTypeList = await context.PUserType.Select(s => s).ToListAsync();
             int seasonId = DateTime.Now.Year;
-
 
             var iList = paginatedList;
             model.RecordCount = paginatedList.TotalRecord;
             model.data = paginatedList;
-
-
             return model;
         }
 
@@ -267,8 +231,7 @@ namespace PIBNAAPI.Command.action
                           p.EndDate == null &&
                           p.ClubId == clubid &&
                           p.DivisionId == divisionid &&
-                          p.SeasonId == DateTime.Now.Year
-                                              select p).ToListAsync();
+                          p.SeasonId == DateTime.Now.Year select p).ToListAsync();
 
             var teamInDivisionList = GetAllTeamInDivision.Select(s => s.TeamId).ToArray();
 
@@ -306,20 +269,13 @@ namespace PIBNAAPI.Command.action
                 m.DateOfBirth = t.DateOfBirth;
                 model.Add(m);
             }
-
             return model.OrderBy(s => s.FirstName).ToList();
-
-
         }
 
         public async Task<List<PTeamStatus>> GetTeamStatusList(PIBNAContext context)
         {
             List<PTeamStatus> model = new List<PTeamStatus>();
-
-            model = await context.PTeamStatus
-                .Select(s => s).ToListAsync();
-
-            return model;
+            return await context.PTeamStatus.Select(s => s).ToListAsync();
         }
 
         public async Task<int> SaveTeam(TeamModel model, PIBNAContext context)
@@ -351,9 +307,7 @@ namespace PIBNAAPI.Command.action
                 }
             }
             await ctx.SaveChangesAsync();
-
             var NewRoster = model.Rosters.Where(s => s.TeamRosterId == 0).Select(s => s).ToList();
-
             foreach (var r in NewRoster)
             {
                 if (r.MemberId <= 0)
@@ -367,7 +321,7 @@ namespace PIBNAAPI.Command.action
                     m.FromDate = DateTime.Now;
                     m.ClubId = model.ClubId;
                     m.UserId = model.UserId;
-                    ctx.PMember.Add(m);
+                    await ctx.PMember.AddAsync(m);
                     await ctx.SaveChangesAsync();
                     r.MemberId = m.MemberId;
                 }
@@ -378,7 +332,7 @@ namespace PIBNAAPI.Command.action
                     roster.TeamId = model.TeamId;
                     roster.MemberId = r.MemberId;
                     roster.FromDate = DateTime.Now;
-                    ctx.PTeamRoster.Add(roster);
+                    await ctx.PTeamRoster.AddAsync(roster);
                 }
             }
             await ctx.SaveChangesAsync();
@@ -393,9 +347,7 @@ namespace PIBNAAPI.Command.action
                 TeamName += "-" + model.DivisionName;
                 TeamName += "-" + model.Officials[0].Name;
                 model.TeamName = TeamName;
-
                 int tempSeasonID = DateTime.Now.Year;
-
                 var team = await (from p in ctx.PTeam
                                   where p.TeamId == model.TeamId && p.EndDate == null
                                   select p).FirstOrDefaultAsync();
@@ -415,7 +367,7 @@ namespace PIBNAAPI.Command.action
                         t.SubmitForApprovalDate = DateTime.Now;
                     }
 
-                    ctx.PTeam.Add(t);
+                    await ctx.PTeam.AddAsync(t);
                     await ctx.SaveChangesAsync();
                     model.TeamId = t.TeamId;
                 }
@@ -423,9 +375,8 @@ namespace PIBNAAPI.Command.action
                 {
                     team.ClubId = model.ClubId;
                     team.DivisionId = model.DivisionId;
-                    team.SeasonId = tempSeasonID;
-                    team.TeamName = model.TeamName;
                     team.UserId = model.UserId;
+                    team.TeamName = model.TeamName;
                     team.TeamStatusId = model.TeamStatusId;
                     if (model.TeamStatusId == 1)
                     {
@@ -459,7 +410,7 @@ namespace PIBNAAPI.Command.action
                     tOfficial.Phone = o.Phone;
                     tOfficial.PositionId = o.PositionId; //head coach
                     tOfficial.FromDate = DateTime.Now;
-                    ctx.PTeamOfficial.Add(tOfficial);
+                    await ctx.PTeamOfficial.AddAsync(tOfficial);
                 }
                 else
                 {

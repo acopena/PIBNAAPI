@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PIBNAAPI.Command.Model
 {
-    public class DivisionModel
+    public class PDivisionModel
     {
         public int DivisionId { get; set; }
         public string DivisionName { get; set; }

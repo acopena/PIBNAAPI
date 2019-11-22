@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PIBNAAPI.Command.Interface;
 using PIBNAAPI.Command.Model;
 using PIBNAAPI.Model;
@@ -12,7 +14,7 @@ namespace PIBNAAPI.Command.action
 {
     public class ClubEvent : IClubEvent
     {
-        public async Task<TeamDashboardModel> GetTeamSummary(int? seasonId, IMapper mapper, PIBNAContext context)
+        public async Task<TeamDashboardModel> GetTeamSummary(int? seasonId, ILogger logger, IMapper mapper, IMediator mediator, PIBNAContext context)
         {
             TeamDashboardModel model = new TeamDashboardModel();
             TeamSummaryModel header = new TeamSummaryModel();
@@ -20,11 +22,15 @@ namespace PIBNAAPI.Command.action
 
             if (seasonId == null)
             {
+                
+
                 var CurrentSeason = await context.PSeason
                     .Where(s => s.IsActive == true)
                     .Select(s => s).FirstOrDefaultAsync();
                 if (CurrentSeason != null)
                     seasonId = CurrentSeason.SeasonId;
+
+                logger.LogWarning("Season is null will set to current season " + seasonId);
 
             }
             var club = await (from p in context.PClub
@@ -55,7 +61,7 @@ namespace PIBNAAPI.Command.action
             model.Header = header;
 
             model.Data = new List<TeamSummaryModel>();
-            var teams = context.PTeam.Where(s => s.SeasonId == seasonId.Value && s.EndDate == null).ToList();
+            var teams = await context.PTeam.Where(s => s.SeasonId == seasonId.Value && s.EndDate == null).ToListAsync();
 
             foreach (var r in club)
             {
@@ -114,7 +120,7 @@ namespace PIBNAAPI.Command.action
             return model;
         }
 
-        public async Task<List<ClubModel>> GetList(IMapper mapper, PIBNAContext context)
+        public async Task<List<ClubModel>> GetList(ILogger logger, IMapper mapper, PIBNAContext context)
         {
             List<ClubModel> data = new List<ClubModel>();
             try
@@ -123,16 +129,7 @@ namespace PIBNAAPI.Command.action
                 data = await context.PClub
                     .Include(s => s.PClubOfficial)
                     .Where(s => s.EndDate == null)
-                    .Select(s => new ClubModel()
-                    {
-                        ClubId = s.ClubId,
-                        ClubName = s.ClubName,
-                        City = s.City,
-                        State = s.State,
-                        Country = s.Country,
-                        WebSite = s.WebSite
-                    }).ToListAsync();
-
+                    .Select(s => mapper.Map<ClubModel>(s)).ToListAsync();
                 foreach (var i in data)
                 {
                     i.WebSite = String.IsNullOrEmpty(i.WebSite) ? string.Empty : i.WebSite;
@@ -156,24 +153,18 @@ namespace PIBNAAPI.Command.action
             catch (Exception ex)
             {
                 var error = ex;
+                logger.LogError(ex.InnerException.ToString());
             }
             return data.OrderBy(s => s.ClubName).ToList();
         }
 
-        public async Task<ClubPageModel> GetListByPage(int pageSize, int page, IMapper mapper, PIBNAContext context)
+        public async Task<ClubPageModel> GetListByPage(int pageSize, int page, ILogger logger, IMapper mapper, PIBNAContext context)
         {
             var model = new ClubPageModel();
 
             var clubs = from p in context.PClub
                         where p.EndDate == null
-                        select new ClubModel
-                        {
-                            ClubName = p.ClubName,
-                            City = p.City,
-                            ClubId = p.ClubId,
-                            Country = p.Country,
-                            State = p.State
-                        };
+                        select mapper.Map<ClubModel>(p);
 
             var data = await PaginatedList<ClubModel>.CreateAsync(clubs.AsNoTracking(), page, pageSize);
 
@@ -184,20 +175,16 @@ namespace PIBNAAPI.Command.action
 
         }
 
-        public async Task<ClubModel> GetById(int id, IMapper mapper, PIBNAContext context)
+        public async Task<ClubModel> GetById(int id, ILogger logger, IMapper mapper, PIBNAContext context)
         {
             ClubModel data = new ClubModel();
             var dta = await (from p in context.PClub
                              where p.EndDate == null && p.ClubId == id
                              select p).FirstOrDefaultAsync();
 
-            if (data != null)
+            if (dta != null)
             {
-                data.ClubId = dta.ClubId;
-                data.ClubName = dta.ClubName;
-                data.City = dta.City;
-                data.State = dta.State;
-                data.Country = dta.Country;
+                mapper.Map(dta, data);
                 data.OfficialList = new List<ClubOfficialModel>();
                 var officials = await context.PClubOfficial.Where(s => s.ClubId == id && s.EndDate == null).Select(s => s).ToListAsync();
                 foreach (var i in officials)
@@ -212,12 +199,16 @@ namespace PIBNAAPI.Command.action
                     data.OfficialList.Add(o);
                 }
             }
+            else
+            {
+                logger.LogWarning("Club id not found " + id.ToString());
+            }
             return data;
 
 
         }
 
-        public async Task PostClub(ClubModel data, IMapper mapper, PIBNAContext context)
+        public async Task PostClub(ClubModel data, ILogger logger, IMapper mapper, PIBNAContext context)
         {
 
 
@@ -234,14 +225,12 @@ namespace PIBNAAPI.Command.action
                 p.Country = data.Country;
                 p.FromDate = DateTime.Now;
                 p.UserId = 2;
-                context.PClub.Add(p);
+                await context.PClub.AddAsync(p);
                 await context.SaveChangesAsync();
                 data.ClubId = p.ClubId;
-
             }
             else
             {
-
                 dta.ClubName = data.ClubName;
                 dta.City = data.City;
                 dta.State = data.State;
@@ -281,7 +270,7 @@ namespace PIBNAAPI.Command.action
                 c.PositionId = 1;
                 c.FromDate = DateTime.Now;
                 c.ClubId = data.ClubId;
-                context.PClubOfficial.Add(c);
+                await context.PClubOfficial.AddAsync(c);
             }
             await context.SaveChangesAsync();
 
@@ -290,10 +279,9 @@ namespace PIBNAAPI.Command.action
 
         }
 
-        public async Task PostOfficialEnd(string id, IMapper mapper, PIBNAContext context)
+        public async Task PostOfficialEnd(string id, ILogger logger, IMapper mapper, PIBNAContext context)
         {
             ClubModel data = new ClubModel();
-
             var dta = await (from p in context.PClubOfficial
                              where p.ClubOfficialId == int.Parse(id)
                              select p).FirstOrDefaultAsync();
@@ -302,14 +290,17 @@ namespace PIBNAAPI.Command.action
             {
                 dta.EndDate = DateTime.Now;
             }
+            else
+            {
+                logger.LogWarning("Official ID not found " + id);
+            }
             await context.SaveChangesAsync();
 
         }
 
-        public async Task DeleteOfficial(int id, IMapper mapper, PIBNAContext context)
+        public async Task DeleteOfficial(int id, ILogger logger, IMapper mapper, PIBNAContext context)
         {
             ClubModel data = new ClubModel();
-
             var dta = await (from p in context.PClubOfficial
                              where p.ClubOfficialId == id
                              select p).FirstOrDefaultAsync();
@@ -319,24 +310,20 @@ namespace PIBNAAPI.Command.action
                 dta.EndDate = DateTime.Now;
                 await context.SaveChangesAsync();
             }
+         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        //public void postUser(UserModel value)
-        //{
-        //    using (var ctx = new PIBNAContext())
-        //    {
-        //        PUser u = new PUser();
-        //        u.UserName = value.username;
-        //        u.AccessCode = value.password;
-        //        u.FirstName = "testing";
-        //        u.LastName = "testing";
-        //        u.ClubId = 4;
-        //        u.FromDate = DateTime.Now;
-        //        u.IsBlockAccount = false;
-        //        ctx.PUser.Add(u);
-        //        ctx.SaveChanges();
-        //    }
-        //}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                //if(_context)
+            }
+        }
     }
 }

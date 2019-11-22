@@ -45,11 +45,19 @@
           "dependencies": {
             "AutoMapper": {
               "target": "Package",
-              "version": "[6.2.2, )"
+              "version": "[9.0.0, )"
             },
             "EntityFrameworkPaginateCore": {
               "target": "Package",
               "version": "[1.1.0, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Core": {
+              "target": "Package",
+              "version": "[2.2.5, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",

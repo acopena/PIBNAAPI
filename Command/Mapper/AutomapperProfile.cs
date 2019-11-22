@@ -9,7 +9,12 @@ namespace PIBNAAPI.Command.PIBNAAPI.Mapper
     {
         public AutomapperProfile()
         {
-            CreateMap<PDivision, DivisionModel>();
+            CreateMap<PClub, ClubModel>();
+            CreateMap<PDivision, PDivisionModel>();
+
+            CreateMap<PDivisionModel, PDivision>()
+                 .ForMember(dest => dest.DivisionId, opt => opt.Ignore())
+                .ForMember(dest => dest.FromDate, opt => opt.MapFrom(src => DateTime.Now));
 
             CreateMap<PTeam, TeamModel>()
                 .ForMember(dest => dest.TeamStatusDescription, opt => opt.MapFrom(src => src.TeamStatus.TeamStatusDescription))
@@ -31,9 +36,10 @@ namespace PIBNAAPI.Command.PIBNAAPI.Mapper
              .ReverseMap();
 
             CreateMap<PWebContent, WebContentModel>();
-                
-
-
+            CreateMap<PUser, UserInfoModel>()
+                .ForMember(dest => dest.ClubName, opt => opt.MapFrom(src => src.Club.ClubName))
+                .ForMember(dest => dest.ClubId, opt => opt.MapFrom(src => src.Club.ClubId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FirstName + ' ' + src.LastName));
 
         }
     }

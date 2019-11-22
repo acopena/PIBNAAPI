@@ -10,7 +10,7 @@ namespace PIBNAAPI.Command.Interface
 {
     public interface IPUserEvent
     {
-        Task<UserInfoPageModel> GetList(string searchKey, string sortKey, int clubId, int roleId, int pageSize, int page, PIBNAContext context);
+        Task<UserInfoPageModel> GetList(string searchKey, string sortKey, int clubId, int roleId, int pageSize, int page, IMapper _mapper, PIBNAContext context);
 
         Task<UserInfoModel> GetAuthorized(string UserName, string password, IMapper mapper, PIBNAContext context);
 

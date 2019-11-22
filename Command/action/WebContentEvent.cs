@@ -16,7 +16,6 @@ namespace PIBNAAPI.Command.action
     {
         public async Task<WebContentPageModel> GetList(int page, int pageSize, IMapper _mapper, PIBNAContext _context)
         {
-            //List<WebContentModel> model = await GetWebContent.GetWebContentList(page, pageSize);
             var model = new WebContentPageModel();
             var content = await GetWebContent.GetWebContentList(page, pageSize, _context);
 

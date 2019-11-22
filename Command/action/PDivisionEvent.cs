@@ -12,25 +12,25 @@ namespace PIBNAAPI.Command.action
 {
     public class PDivisionEvent : IPDivisionEvent
     {
-        public async Task<List<DivisionModel>> GetList(IMapper _mapper, PIBNAContext _context)
+        public async Task<List<PDivisionModel>> GetList(IMapper _mapper, PIBNAContext _context)
         {
-            return _mapper.Map<List<DivisionModel>>(await _context.PDivision
+            return _mapper.Map<List<PDivisionModel>>(await _context.PDivision
                           .Where(p => p.EndDate == null)
                           .OrderBy(p => p.DivisionName)
                           .Select(p => p).ToListAsync());
         }
 
-        public async Task<DivisionModel> GetById(int id, IMapper _mapper, PIBNAContext _context)
+        public async Task<PDivisionModel> GetById(int id, IMapper _mapper, PIBNAContext _context)
         {
             return  await _context.PDivision
                           .Where(p=> p.EndDate == null && p.DivisionId == id)
-                          .Select(p => _mapper.Map<DivisionModel>(p)).FirstOrDefaultAsync();
+                          .Select(p => _mapper.Map<PDivisionModel>(p)).FirstOrDefaultAsync();
 
         }
 
-        public async Task PostDivision(DivisionModel model, IMapper _mapper, PIBNAContext _context)
+        public async Task PostDivision(PDivisionModel model, IMapper _mapper, PIBNAContext _context)
         {
-            DivisionModel data = model;
+            PDivisionModel data = model;
             try
             {
 
@@ -41,26 +41,15 @@ namespace PIBNAAPI.Command.action
 
                 if (dta == null)
                 {
-                    PDivision p = new PDivision();
-                    p.DivisionName = data.DivisionName;
-                    p.DivisionShortName = data.DivisionShortName;
-                    p.MinAge = data.MinAge;
-                    p.MaxAge = data.MaxAge;
+                    PDivision p =  new PDivision();
+                    _mapper.Map(data, p);
                     p.FromDate = DateTime.Now;
-                    p.MaxHeightRequired = data.MaxHeightRequired;
-                    p.AgeGroup = data.AgeGroup;
                     _context.PDivision.Add(p);
                     data.DivisionId = p.DivisionId;
                 }
                 else
                 {
-                    dta.DivisionName = data.DivisionName;
-                    dta.DivisionShortName = data.DivisionShortName;
-                    dta.MinAge = data.MinAge;
-                    dta.MaxAge = data.MaxAge;
-                    dta.FromDate = DateTime.Now;
-                    dta.MaxHeightRequired = data.MaxHeightRequired;
-                    dta.AgeGroup = data.AgeGroup;
+                    _mapper.Map(data, dta);
                 }
                 await _context.SaveChangesAsync();
 

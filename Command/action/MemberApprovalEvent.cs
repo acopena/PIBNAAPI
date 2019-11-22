@@ -66,7 +66,6 @@ namespace PIBNAAPI.Command.action
             foreach (var data in teamInfo.Rosters)
             {
                 var approval = approvalData
-
                     .Where(s => s.MemberId == data.MemberId).FirstOrDefault();
                 if (approval != null)
                 {
@@ -77,9 +76,7 @@ namespace PIBNAAPI.Command.action
                     data.ApprovedStatusId = approval.ApprovedStatusId;
                     data.IsApproved = approval.IsApproved;
                 }
-
             }
-
             return teamInfo;
         }
 
@@ -101,7 +98,7 @@ namespace PIBNAAPI.Command.action
 
             foreach (var m in memberList)
             {
-                var idata = context.PMemberApproval.Where(x => x.MemberId == m.MemberId).Select(x => x).FirstOrDefault();
+                var idata = await context.PMemberApproval.Where(x => x.MemberId == m.MemberId).Select(x => x).FirstOrDefaultAsync();
                 if (idata == null)
                 {
                     PMemberApproval mApproval = new PMemberApproval();

@@ -24,7 +24,7 @@ namespace PIBNAAPI.Command.action
             {
                 data.ClubId = dta.ClubId;
                 data.SeasonId = dta.SeasonId;
-                data.ClubName = _context.PClub.Where(s => s.ClubId == dta.ClubId).Select(s => s.ClubName).FirstOrDefault();
+                data.ClubName = await _context.PClub.Where(s => s.ClubId == dta.ClubId).Select(s => s.ClubName).FirstOrDefaultAsync();
             }
             else
             {
@@ -50,12 +50,9 @@ namespace PIBNAAPI.Command.action
                 HostCityModel idata = new HostCityModel();
                 idata.ClubId = r.ClubId;
                 idata.SeasonId = r.SeasonId;
-                idata.ClubName = _context.PClub.Where(s => s.ClubId == r.ClubId).Select(s => s.ClubName).FirstOrDefault();
+                idata.ClubName = await _context.PClub.Where(s => s.ClubId == r.ClubId).Select(s => s.ClubName).FirstOrDefaultAsync();
                 data.Add(idata);
             }
-
-
-
             return data;
         }
     }

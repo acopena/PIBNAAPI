@@ -20,6 +20,8 @@ namespace PIBNAAPI.Command.Model
         public List<UserRoleModel> UserRoleList { get; set; }
         public Boolean IsHostCity { get; set; }
         public HostCityModel HostCity { get; set; }
+
+        
     }
 
     public class UserInfoPageModel
