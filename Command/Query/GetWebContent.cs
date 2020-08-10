@@ -16,6 +16,7 @@ namespace PIBNAAPI.Command.Query
             var modelList = context.PWebContent
                 .Include(s => s.WebContentType)
                 .Where(s => s.EndDate == null)
+                .OrderByDescending(s=>s.PublishStartDate)
                 .Select(s => new WebContentModel
                 {
                     PostedById = s.PostedById,
@@ -44,6 +45,7 @@ namespace PIBNAAPI.Command.Query
                     .Include(s => s.WebContentType)
                     .Where(s => s.EndDate == null && s.WebContentTypeId == pageid
                     && (s.PublishStartDate <= today && s.PublishedEndDate > today))
+                    .OrderByDescending(s=>s.PublishStartDate)
                     .Select(s => new WebContentModel
                     {
                         PostedById = s.PostedById,

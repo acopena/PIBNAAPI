@@ -9,3 +9,12 @@ C:\Project\PIBNAAPI\obj\Debug\netcoreapp2.0\PIBNAAPI.pdb
 C:\Project\PIBNAAPI\bin\Debug\netcoreapp2.0\PIBNAAPI.runtimeconfig.json
 C:\Project\PIBNAAPI\bin\Debug\netcoreapp2.0\PIBNAAPI.runtimeconfig.dev.json
 C:\Project\PIBNAAPI\obj\Debug\netcoreapp2.0\PIBNAAPI.csprojResolveAssemblyReference.cache
+C:\repo\PIBNAAPI\bin\Debug\netcoreapp2.0\PIBNAAPI.deps.json
+C:\repo\PIBNAAPI\bin\Debug\netcoreapp2.0\PIBNAAPI.dll
+C:\repo\PIBNAAPI\bin\Debug\netcoreapp2.0\PIBNAAPI.pdb
+C:\repo\PIBNAAPI\obj\Debug\netcoreapp2.0\PIBNAAPI.csprojAssemblyReference.cache
+C:\repo\PIBNAAPI\obj\Debug\netcoreapp2.0\PIBNAAPI.csproj.CoreCompileInputs.cache
+C:\repo\PIBNAAPI\obj\Debug\netcoreapp2.0\PIBNAAPI.AssemblyInfoInputs.cache
+C:\repo\PIBNAAPI\obj\Debug\netcoreapp2.0\PIBNAAPI.AssemblyInfo.cs
+C:\repo\PIBNAAPI\obj\Debug\netcoreapp2.0\PIBNAAPI.dll
+C:\repo\PIBNAAPI\obj\Debug\netcoreapp2.0\PIBNAAPI.pdb

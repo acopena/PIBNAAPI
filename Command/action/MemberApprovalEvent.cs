@@ -18,7 +18,7 @@ namespace PIBNAAPI.Command.action
             MemberApprovedModel teamInfo = new MemberApprovedModel();
 
             teamInfo = await context.PTeam.Where(s => s.TeamId == teamId)
-                .Select(s => new MemberApprovedModel
+                .Select(s => new MemberApprovedModel()
                 {
                     TeamId = s.TeamId,
                     TeamName = s.TeamName
@@ -32,7 +32,7 @@ namespace PIBNAAPI.Command.action
             teamInfo.Officials = await context.PTeamOfficial
                 .Include(s => s.Position)
                 .Where(s => s.TeamId == teamId && s.EndDate == null)
-                .Select(s => new MemberApprovedOfficialModel
+                .Select(s => new MemberApprovedOfficialModel()
                 {
                     OfficialName = s.Name,
                     Email = s.Email,
@@ -40,21 +40,29 @@ namespace PIBNAAPI.Command.action
                     PositionDescription = s.Position.PositionDescription
                 }).ToListAsync();
 
-            teamInfo.Rosters = await context.PTeamRoster
-                .Include(s => s.Member)
-                .Where(s => s.TeamId == teamId && s.EndDate == null)
-                .Select(s => new MemberApprovedRosterModel
+            // String.Join(s.Member.LastName, ", ", s.Member.FirstName),
+
+            var rosters = await context.PTeamRoster
+                .Include(s =>s.Member)
+              .Where(s => s.TeamId == teamId && s.EndDate == null)
+              .Select(s =>s).ToListAsync();
+
+            foreach(var r in rosters)
+            {
+                MemberApprovedRosterModel roster = new MemberApprovedRosterModel()
                 {
-                    MemberId = s.MemberId,
-                    MemberName = s.Member.LastName + ", " + s.Member.FirstName + " " + s.Member.MiddleName,
-                    BirthDate = s.Member.DateOfBirth,
+                    MemberId = r.MemberId,
+                    MemberName = String.Join(", ",r.Member.LastName, r.Member.FirstName),
+                    BirthDate = r.Member.DateOfBirth,
                     MemberApprovedId = 0,
                     ApprovedDate = DateTime.Now,
                     UserId = 0,
                     UserName = "",
                     ApprovedStatusId = 0,
                     IsApproved = false
-                }).OrderBy(s => s.MemberName).ToListAsync();
+                };
+                teamInfo.Rosters.Add(roster);
+            }
 
             var arrayMembers = teamInfo.Rosters.Select(x => x.MemberId).ToArray();
 
@@ -85,7 +93,7 @@ namespace PIBNAAPI.Command.action
         {
             List<MemberApprovalStatusModel> statusList = new List<MemberApprovalStatusModel>();
             statusList = await _context.PApprovedStatus
-                .Select(s => new MemberApprovalStatusModel
+                .Select(s => new MemberApprovalStatusModel()
                 {
                     Id = s.ApprovedStatusId,
                     Description = s.Description

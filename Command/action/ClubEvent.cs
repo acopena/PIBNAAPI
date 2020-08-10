@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PIBNAAPI.Command.Interface;
@@ -14,7 +13,7 @@ namespace PIBNAAPI.Command.action
 {
     public class ClubEvent : IClubEvent
     {
-        public async Task<TeamDashboardModel> GetTeamSummary(int? seasonId, ILogger logger, IMapper mapper, IMediator mediator, PIBNAContext context)
+        public async Task<TeamDashboardModel> GetTeamSummary(int? seasonId, ILogger logger, IMapper mapper,PIBNAContext context)
         {
             TeamDashboardModel model = new TeamDashboardModel();
             TeamSummaryModel header = new TeamSummaryModel();

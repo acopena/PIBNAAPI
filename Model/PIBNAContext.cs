@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace PIBNAAPI.Model
 {
@@ -105,6 +106,8 @@ namespace PIBNAAPI.Model
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.FromDate).HasColumnType("datetime");
+                entity.Property(e => e.IsCurrentHost)
+               .HasConversion(new BoolToZeroOneConverter<Int16>());
 
                 entity.HasOne(d => d.Club)
                     .WithMany(p => p.PClubHost)
@@ -183,6 +186,8 @@ namespace PIBNAAPI.Model
                     .IsRequired()
                     .HasMaxLength(250);
 
+                entity.Property(e => e.IsHeightRequired)
+                .HasConversion(new BoolToZeroOneConverter<Int16>());
                 entity.Property(e => e.DivisionShortName).HasMaxLength(50);
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
@@ -219,7 +224,7 @@ namespace PIBNAAPI.Model
 
                 entity.ToTable("p_Member");
 
-                entity.Property(e => e.DateBlockListed).HasColumnType("datetime");
+                entity.Property(e => e.DateBlockListed).HasColumnType("datetime");               
 
                 entity.Property(e => e.DateOfBirth).HasColumnType("date");
 
@@ -236,6 +241,8 @@ namespace PIBNAAPI.Model
                     .HasMaxLength(50);
 
                 entity.Property(e => e.MiddleName).HasMaxLength(50);
+                entity.Property(e => e.IsBlockListed)
+                 .HasConversion(new BoolToZeroOneConverter<Int16>());
 
                 entity.HasOne(d => d.Club)
                     .WithMany(p => p.PMember)
@@ -249,12 +256,15 @@ namespace PIBNAAPI.Model
                 entity.HasKey(e => e.MemberApprovalId);
 
                 entity.ToTable("p_MemberApproval");
+                entity.Property(e => e.IsApproved)
+                   .HasConversion(new BoolToZeroOneConverter<Int16>());
 
                 entity.Property(e => e.ApprovedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.FromDate).HasColumnType("datetime");
+               
 
                 entity.HasOne(d => d.ApprovedStatus)
                     .WithMany(p => p.PMemberApproval)
@@ -325,6 +335,8 @@ namespace PIBNAAPI.Model
                 entity.Property(e => e.SeasonName)
                     .IsRequired()
                     .HasMaxLength(150);
+                entity.Property(e => e.IsActive)
+               .HasConversion(new BoolToZeroOneConverter<Int16>());
             });
 
             modelBuilder.Entity<PTeam>(entity =>
@@ -526,10 +538,12 @@ namespace PIBNAAPI.Model
                 entity.Property(e => e.LastName)
                     .IsRequired()
                     .HasMaxLength(50);
-
+                
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasMaxLength(150);
+                entity.Property(e => e.IsBlockAccount)
+                .HasConversion(new BoolToZeroOneConverter<Int16>());
 
                 entity.HasOne(d => d.Club)
                     .WithMany(p => p.PUser)
@@ -547,6 +561,8 @@ namespace PIBNAAPI.Model
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.FromDate).HasColumnType("datetime");
+                entity.Property(e => e.IsActive)
+               .HasConversion(new BoolToZeroOneConverter<Int16>());
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
@@ -596,6 +612,8 @@ namespace PIBNAAPI.Model
                 entity.Property(e => e.WebTitle)
                     .IsRequired()
                     .HasMaxLength(250);
+                entity.Property(e => e.IsExpire)
+               .HasConversion(new BoolToZeroOneConverter<Int16>());
 
                 entity.HasOne(d => d.PostedBy)
                     .WithMany(p => p.PWebContent)

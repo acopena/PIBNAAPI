@@ -15,3 +15,4 @@ C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.AssemblyInfo.cs
 C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.dll
 C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.pdb
 C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.csprojAssemblyReference.cache
+C:\repo\PIBNAAPI\obj\Release\netcoreapp2.2\PIBNAAPI.csproj.CoreCompileInputs.cache

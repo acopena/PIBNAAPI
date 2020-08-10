@@ -119,64 +119,110 @@ namespace PIBNAAPI.Command.action
         {
 
             List<TeamModel> teamList = new List<TeamModel>();
-            var teamIdList = data.Select(s => s.TeamId).ToArray();
-            var rosters = await context.PTeamRoster
-               .Where(s => teamIdList.Contains(s.TeamId) && s.EndDate == null)
-               .Select(s => new TeamRosterModel
-               {
-                   TeamId = s.TeamId,
-                   TeamRosterId = s.TeamRosterId,
-                   MemberId = s.MemberId,
-                   LastName = s.Member.LastName,
-                   FirstName = s.Member.FirstName,
-                   MiddleName = s.Member.MiddleName,
-                   DateOfBirth = s.Member.DateOfBirth,
-                   IsApproved = context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().IsApproved,
-                   ApprovedDate = context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().ApprovedDate
-               }).ToListAsync();
-
-            var officials = await context.PTeamOfficial
-              .Include(s => s.Position)
-               .Where(s => teamIdList.Contains(s.TeamId) && s.EndDate == null)
-              .Select(s => new TeamOfficialModel
-              {
-                  TeamId = s.TeamId,
-                  Name = s.Name,
-                  Email = s.Email,
-                  Phone = s.Phone,
-                  TeamOfficialId = s.TeamOfficialId,
-                  PositionName = s.Position.PositionDescription,
-                  PositionId = s.PositionId
-              }).ToListAsync();
-
-            foreach (var r in data)
+            if (data.Count > 0)
             {
-                var teamRosters = rosters.Where(s => s.TeamId == r.TeamId).ToList();
-                var teamOfficials = officials.Where(s => s.TeamId == r.TeamId).ToList();
+                try
+                {
+                    var teamIdList = data.Select(s => s.TeamId).ToArray();
 
-                TeamModel model = _mapper.Map<TeamModel>(r);
+                    var rosters = await context.PTeamRoster
+                       .Where(s => teamIdList.Contains(s.TeamId) && s.EndDate == null)
+                       .Select(s => new TeamRosterModel
+                       {
+                           TeamId = s.TeamId,
+                           TeamRosterId = s.TeamRosterId,
+                           MemberId = s.MemberId,
+                           LastName = s.Member.LastName,
+                           FirstName = s.Member.FirstName,
+                           MiddleName = s.Member.MiddleName,
+                           DateOfBirth = s.Member.DateOfBirth,
+                           IsApproved = false, // getApprovalStatus(context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null)),
+                           ApprovedDate = context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().ApprovedDate
+                       }).ToListAsync();
 
-                model.Rosters = teamRosters;
-                model.RosterCount = teamRosters.Count();
-                model.RosterApproved = teamRosters.Where(s => s.IsApproved == true).Count();
-                model.RosterDisapproved = model.RosterCount - model.RosterApproved;
-                model.Officials = teamOfficials;
-                teamList.Add(model);
+                    var memberList = rosters.Select(s => s.MemberId).ToArray();
+
+                    var memberApprovalList = context.PMemberApproval.Where(c => memberList.Contains(c.MemberId) && c.EndDate == null)
+                            .Select(s => new MemberApproval
+                            {
+                                MemberId = s.MemberId,
+                                IsApproved = s.IsApproved,
+                                Notes = s.Notes
+                            }).ToList();
+
+                    foreach(var rs in rosters)
+                    {
+                        var approvedStatus = memberApprovalList.Where(s => s.MemberId == rs.MemberId).FirstOrDefault();
+                        rs.IsApproved = approvedStatus != null? approvedStatus.IsApproved : false ;
+                        
+                    }
+
+
+
+                    //context.PMemberApproval.Where(c => c.MemberId == s.MemberId && c.EndDate == null).FirstOrDefault().IsApproved,
+
+                    var officials = await context.PTeamOfficial
+                      .Include(s => s.Position)
+                       .Where(s => teamIdList.Contains(s.TeamId) && s.EndDate == null)
+                      .Select(s => new TeamOfficialModel
+                      {
+                          TeamId = s.TeamId,
+                          Name = s.Name,
+                          Email = s.Email,
+                          Phone = s.Phone,
+                          TeamOfficialId = s.TeamOfficialId,
+                          PositionName = s.Position.PositionDescription,
+                          PositionId = s.PositionId
+                      }).ToListAsync();
+
+                    foreach (var r in data)
+                    {
+                        var teamRosters = rosters.Where(s => s.TeamId == r.TeamId).ToList();
+                        var teamOfficials = officials.Where(s => s.TeamId == r.TeamId).ToList();
+
+                        TeamModel model = _mapper.Map<TeamModel>(r);
+
+                        model.Rosters = teamRosters;
+                        model.RosterCount = teamRosters.Count();
+                        model.RosterApproved = teamRosters.Where(s => s.IsApproved == true).Count();
+                        model.RosterDisapproved = model.RosterCount - model.RosterApproved;
+                        model.Officials = teamOfficials;
+                        teamList.Add(model);
+                    }
+                }
+                catch (Exception err)
+                {
+                    string errmsg = err.Message;
+                }
             }
             return teamList;
+
+        }
+
+        static bool getApprovalStatus(PMemberApproval? pApproval)
+        {
+            bool isApproved = false;
+            if (pApproval != null)
+            {
+                isApproved = pApproval.IsApproved;
+            }
+            return isApproved;
+
 
         }
 
         public async Task<OpenRosterInfoPageModel> GetOpenPlayers(string searchKey, string sortKey,
            int clubid, int divisionid, int teamid, int pageSize, int page, PIBNAContext context)
         {
+            int sCurrent = DateTime.Now.Year;
             OpenRosterInfoPageModel model = new OpenRosterInfoPageModel();
-            var GetAllTeamInDivision = await (from p in context.PTeam where
-                          p.EndDate == null &&
-                          p.ClubId == clubid &&
-                          p.DivisionId == divisionid &&
-                          p.SeasonId == DateTime.Now.Year
-                          select p).ToListAsync();
+            var GetAllTeamInDivision = await (from p in context.PTeam
+                                              where
+  p.EndDate == null &&
+  p.ClubId == clubid &&
+  p.DivisionId == divisionid &&
+  p.SeasonId == sCurrent
+                                              select p).ToListAsync();
 
             var teamInDivisionList = GetAllTeamInDivision.Select(s => s.TeamId).ToArray();
             var PlayerInTeam = await (from p in context.PTeamRoster
@@ -211,7 +257,7 @@ namespace PIBNAAPI.Command.action
 
             if (!String.IsNullOrEmpty(searchKey))
                 memberList = memberList.Where(s => s.FirstName.Contains(searchKey) || s.LastName.Contains(searchKey));
-            
+
             var paginatedList = await PaginatedList<AvailableRosterModel>.CreateAsync(memberList.AsNoTracking(), page, pageSize);
             var userTypeList = await context.PUserType.Select(s => s).ToListAsync();
             int seasonId = DateTime.Now.Year;
@@ -225,13 +271,15 @@ namespace PIBNAAPI.Command.action
         public async Task<List<AvailableRosterModel>> GetAvailablePlayer(int clubid, int divisionid, int teamid, PIBNAContext context)
         {
             List<AvailableRosterModel> model = new List<AvailableRosterModel>();
+            int cSeasonId = DateTime.Now.Year;
 
             var GetAllTeamInDivision = await (from p in context.PTeam
                                               where
                           p.EndDate == null &&
                           p.ClubId == clubid &&
                           p.DivisionId == divisionid &&
-                          p.SeasonId == DateTime.Now.Year select p).ToListAsync();
+                          p.SeasonId == cSeasonId
+                                              select p).ToListAsync();
 
             var teamInDivisionList = GetAllTeamInDivision.Select(s => s.TeamId).ToArray();
 
@@ -250,12 +298,15 @@ namespace PIBNAAPI.Command.action
 
             int StartYear = DateTime.Now.Year - dInfo.MaxAge;
             int EndYear = DateTime.Now.Year - dInfo.MinAge;
+            DateTime sBirth = new DateTime(StartYear, 11, 1);
+            DateTime eBirth = new DateTime(EndYear, 11, 3);
+
 
             //Get all the member in the club that is in this age group
             var memberList = await (from p in context.PMember
                                     where p.ClubId == clubid
                                     && !pTeamArray.Contains(p.MemberId)
-                                    && p.DateOfBirth.Year >= StartYear && p.DateOfBirth.Year <= EndYear
+                                    && p.DateOfBirth >= sBirth && p.DateOfBirth <= eBirth
                                     && p.EndDate == null
                                     select p).ToListAsync();
 
@@ -438,4 +489,11 @@ namespace PIBNAAPI.Command.action
         }
     }
 
+
+    public class MemberApproval
+    {
+        public int MemberId { get; set; }
+        public bool IsApproved { get; set; }
+        public string Notes { get; set; }
+    }
 }

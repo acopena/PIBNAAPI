@@ -31,7 +31,7 @@ namespace PIBNAAPI.Command.action
                         FirstName = s.FirstName,
                         LastName = s.LastName,
                         ClubName = s.Club.ClubName,
-                        Name = s.FirstName + ' ' +  s.LastName,
+                        Name =   string.Join(" ", s.FirstName, s.LastName),
                         ClubId = s.ClubId
                     });
 
@@ -39,6 +39,8 @@ namespace PIBNAAPI.Command.action
                     users = users.Where(s => s.UserName.Contains(searchKey) || s.FirstName.Contains(searchKey) || s.LastName.Contains(searchKey) || s.ClubName.Contains(searchKey));
                 if (roleId == 3)
                     users = users.Where(s => s.ClubId == clubId);
+
+                var ilist = users.ToList();
 
                 var paginatedList = await PaginatedList<UserInfoModel>.CreateAsync(users.AsNoTracking(), page, pageSize);
                 var userTypeList = context.PUserType.Select(s => s).ToList();
@@ -303,9 +305,8 @@ namespace PIBNAAPI.Command.action
             int userId = 0;
 
             var dta = await (from p in context.PUser
-                             where p.UserName.ToLower().Trim() == value.UserName.ToLower().Trim() && p.EndDate == null
+                             where p.UserName == value.UserName && p.EndDate == null
                              select p).FirstOrDefaultAsync();
-
 
             if (dta == null)
             {
@@ -317,11 +318,9 @@ namespace PIBNAAPI.Command.action
                 p.ClubId = value.ClubId;
                 p.AccessCode = value.Password;
                 p.FromDate = DateTime.Now;
-                await context.PUser.AddAsync(p);
-                await context.SaveChangesAsync();
+                context.PUser.Add(p);
+                context.SaveChanges();
                 userId = p.UserId;
-
-
 
                 var CityDirector = await context.PClubOfficial
                 .Where(s => s.Email == value.UserName && s.EndDate == null)
@@ -349,10 +348,15 @@ namespace PIBNAAPI.Command.action
                     await context.PUserRole.AddAsync(AddUserRole(4, userId, isActive, context));
                     isActive = false;
                 }
+                await context.SaveChangesAsync();
             }
-            await context.SaveChangesAsync();
+            else
+            {
+                userId = dta.UserId;
+            }
+          
 
-            model = await GetUserById(dta.UserId, mapper, context);
+            model = await GetUserById(userId, mapper, context);
             var activeRole = model.UserRoleList.Where(s => s.IsRole == true).ToList();
             model.UserRoleList = activeRole;
             return model;
@@ -373,6 +377,11 @@ namespace PIBNAAPI.Command.action
         async Task<UserInfoModel> GetUserInfo(PUser data, IMapper mapper, PIBNAContext ctx)
         {
             UserInfoModel model = new UserInfoModel();
+            if (data == null)
+            {
+                return model;
+            }
+           
             model.UserId = data.UserId;
             model.UserName = data.UserName;
             model.LastName = data.LastName;

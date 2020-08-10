@@ -20,15 +20,17 @@ namespace PIBNAAPI.Command.action
             }
 
             MemberSearchReturn model = new MemberSearchReturn();
+            //p.DateOfBirth.Day == bod.Day &&
+            //                  p.DateOfBirth.Month == bod.Month &&
+            //                  p.DateOfBirth.Year == bod.Year
 
+            string fName = firstname.ToUpper();
+            string lName = lastname.ToUpper();
             var data = await (from p in _context.PMember
                               where p.EndDate == null &&
-                              p.FirstName.ToUpper() == firstname.ToUpper() &&
-                              p.LastName.ToUpper() == lastname.ToUpper() &&
-                              p.MiddleName.ToUpper() == middlename.ToUpper() &&
-                              p.DateOfBirth.Day == bod.Day &&
-                              p.DateOfBirth.Month == bod.Month &&
-                              p.DateOfBirth.Year == bod.Year
+                              p.DateOfBirth >= bod && p.DateOfBirth <= bod &&
+                              p.FirstName == fName  &&
+                              p.LastName == lName
                               select p).FirstOrDefaultAsync();
             if (data != null)
             {

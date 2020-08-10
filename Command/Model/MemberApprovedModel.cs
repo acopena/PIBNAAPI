@@ -22,7 +22,7 @@ namespace PIBNAAPI.Command.Model
         public DateTime? ApprovedDate { get; set; }
         public int? UserId { get; set; }
         public string UserName { get; set; }
-        public int? ApprovedStatusId { get; set; }
+        public int ApprovedStatusId { get; set; }
         public bool? IsApproved { get; set; }
     }
 

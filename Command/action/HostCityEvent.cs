@@ -14,10 +14,10 @@ namespace PIBNAAPI.Command.action
     {
         public async Task<HostCityModel> GetHostCity(IMapper _mapper, PIBNAContext _context)
         {
+            int cSeason = DateTime.Now.Year;
             HostCityModel data = new HostCityModel();
-
             var dta = await (from p in _context.PClubHost
-                             where p.EndDate == null && p.SeasonId == DateTime.Now.Year
+                             where p.EndDate == null && p.SeasonId == cSeason
                              select p).FirstOrDefaultAsync();
 
             if (dta != null)

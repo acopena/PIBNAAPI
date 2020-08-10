@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PIBNAAPI.Model
 {
@@ -13,7 +14,8 @@ namespace PIBNAAPI.Model
         public string Notes { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public bool? IsApproved { get; set; }
+              
+        public bool IsApproved { get; set; }
 
         public virtual PApprovedStatus ApprovedStatus { get; set; }
         public virtual PMember Member { get; set; }
