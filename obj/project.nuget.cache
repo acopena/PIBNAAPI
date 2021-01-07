@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "VaioPH1Y1+soP66cmfP2jsKIqoxTnU6Rec2byinnqXwvoIWPz/j6w18USJvf3SpMkExwIuByxVQysMNihXn1+A==",
+  "dgSpecHash": "M/9fA84MRrNsLwJ+1ZU3K0aHDExVkAwdeM/KYAEsrCytAAZlSB2p092iZjd8wyZKdvpx6jlgK2oV3G1P2KzFkw==",
   "success": true,
   "projectFilePath": "C:\\repo\\APICore3\\PIBNAAPI\\PIBNAAPI.csproj",
   "expectedPackageFiles": [
@@ -11,7 +11,7 @@
     "C:\\Users\\acopena\\.nuget\\packages\\k4os.compression.lz4\\1.1.11\\k4os.compression.lz4.1.1.11.nupkg.sha512",
     "C:\\Users\\acopena\\.nuget\\packages\\k4os.compression.lz4.streams\\1.1.11\\k4os.compression.lz4.streams.1.1.11.nupkg.sha512",
     "C:\\Users\\acopena\\.nuget\\packages\\k4os.hash.xxhash\\1.0.6\\k4os.hash.xxhash.1.0.6.nupkg.sha512",
-    "C:\\Users\\acopena\\.nuget\\packages\\mediatr\\8.1.0\\mediatr.8.1.0.nupkg.sha512",
+    "C:\\Users\\acopena\\.nuget\\packages\\mediatr\\9.0.0\\mediatr.9.0.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.aspnetcore.authentication.core\\2.2.0\\microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.aspnetcore.authorization\\2.2.0\\microsoft.aspnetcore.authorization.2.2.0.nupkg.sha512",

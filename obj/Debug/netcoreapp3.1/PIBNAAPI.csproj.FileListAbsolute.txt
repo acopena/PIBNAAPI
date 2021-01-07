@@ -12,9 +12,9 @@ C:\repo\APICore3\PIBNAAPI\bin\Debug\netcoreapp3.1\PIBNAAPI.runtimeconfig.json
 C:\repo\APICore3\PIBNAAPI\bin\Debug\netcoreapp3.1\PIBNAAPI.runtimeconfig.dev.json
 C:\repo\APICore3\PIBNAAPI\bin\Debug\netcoreapp3.1\PIBNAAPI.dll
 C:\repo\APICore3\PIBNAAPI\bin\Debug\netcoreapp3.1\PIBNAAPI.pdb
-C:\repo\APICore3\PIBNAAPI\obj\Debug\netcoreapp3.1\PIBNAAPI.csproj.CoreCompileInputs.cache
 C:\repo\APICore3\PIBNAAPI\obj\Debug\netcoreapp3.1\PIBNAAPI.AssemblyInfoInputs.cache
 C:\repo\APICore3\PIBNAAPI\obj\Debug\netcoreapp3.1\PIBNAAPI.AssemblyInfo.cs
+C:\repo\APICore3\PIBNAAPI\obj\Debug\netcoreapp3.1\PIBNAAPI.csproj.CoreCompileInputs.cache
 C:\repo\APICore3\PIBNAAPI\obj\Debug\netcoreapp3.1\PIBNAAPI.dll
 C:\repo\APICore3\PIBNAAPI\obj\Debug\netcoreapp3.1\PIBNAAPI.pdb
 C:\repo\APICore3\PIBNAAPI\obj\Debug\netcoreapp3.1\PIBNAAPI.genruntimeconfig.cache
