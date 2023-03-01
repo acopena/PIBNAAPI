@@ -313,6 +313,7 @@ namespace PIBNAAPI.Model
 
                 entity.ToTable("p_RoleRules");
 
+
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.PRoleRules)
                     .HasForeignKey(d => d.RoleId)
